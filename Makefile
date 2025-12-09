@@ -15,7 +15,7 @@ ci: deps libpce.so
 EMBEDFLAGS=-O3 -fvisibility=hidden -static-libstdc++ -fPIC
 # CFLAGS=-fvisibility=hidden -ffreestanding -nostdlib -fPIC -O3 -Wfatal-errors -Werror
 SRCS := $(wildcard Geargrafx/src/*.cpp Geargrafx/platforms/libretro/*.cpp)
-SMSFLAGS=-std=c++14 -Wfatal-errors -Werror -Wno-narrowing -D__LIBRETRO__ -I Geargrafx/src -I Geargrafx/platforms/libretro -I Geargrafx/platforms/shared/dependencies/miniz/ -Wno-div-by-zero
+SMSFLAGS=-std=c++14 -Wfatal-errors -Werror -Wno-narrowing -D__LIBRETRO__ -I Geargrafx/src -I Geargrafx/platforms/libretro -I Geargrafx/platforms/shared/dependencies/miniz/ -I Geargrafx/platforms/shared/dependencies/libchdr/include/ -Wno-div-by-zero
 libpce.so: libpce.cpp corelib.h
 	$(CXX) $(CFLAGS) $(EMBEDFLAGS) $(SMSFLAGS) -shared -o libpce.so libpce.cpp $(SRCS)
 	cp libpce.so libapu.so
