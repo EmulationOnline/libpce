@@ -46,23 +46,26 @@ void log(const char* msg) {
 EXPOSE
 void zero() {
     printf("zeroing.\n");
-    core_.Init();
 }
 
 EXPOSE
 void set_key(size_t key, char val) {
-    GS_Keys gsk;
+    GG_Keys gsk;
     switch(key) {
-        case BTN_A: gsk = Key_2; break;
-        case BTN_B: gsk = Key_1; break;
-        case BTN_Up: gsk = Key_Up; break;
-        case BTN_Down: gsk = Key_Down; break;
-        case BTN_Left: gsk = Key_Left; break;
-        case BTN_Right: gsk = Key_Right; break;
+        case BTN_A: gsk = GG_KEY_I; break;
+        case BTN_B: gsk = GG_KEY_II; break;
+        /* Keys III to VI also exist, but
+           don't exist on the main controller
+           so are unmapped here.
+        */
+        case BTN_Up: gsk = GG_KEY_UP; break;
+        case BTN_Down: gsk = GG_KEY_DOWN; break;
+        case BTN_Left: gsk = GG_KEY_LEFT; break;
+        case BTN_Right: gsk = GG_KEY_RIGHT; break;
         default: return;
     }
 
-    constexpr GS_Joypads joypad = Joypad_1;
+    constexpr GG_Controllers joypad = GG_CONTROLLER_1;
     if (val) {
         core_.KeyPressed(joypad, gsk);
     } else {
@@ -81,11 +84,15 @@ uint8_t *alloc_rom(size_t bytes) {
     return rom_buffer_;
 }
 
+void unused_input_pump() {}
+
 EXPOSE
 void init(const uint8_t* data, size_t len) {
     printf("libsms init\n");
 
-    core_.Init();
+    core_.Init(
+            unused_input_pump,
+            GG_PIXEL_RGBA8888);
     if (!core_.LoadROMFromBuffer(data, len)) {
         puts("ROM load failed.");
         return;
