@@ -93,7 +93,7 @@ void init(const uint8_t* data, size_t len) {
     core_.Init(
             unused_input_pump,
             GG_PIXEL_RGBA8888);
-    if (!core_.LoadROMFromBuffer(data, len)) {
+    if (!core_.LoadHuCardFromBuffer(data, len, "game.pce")) {
         puts("ROM load failed.");
         return;
     }
@@ -142,7 +142,8 @@ EXPOSE
 void frame() {
     REQUIRE_CORE();
     int samples = 0;
-    core_.RunToVBlank((uint8_t*)&megabuffer, abuffer, &samples);
+    // core_.RunToVBlank((uint8_t*)&megabuffer, abuffer, &samples);
+    core_.RunToVBlank((uint8_t*)&fbuffer, abuffer, &samples);
     // Core produces stereo, convert to mono
     for (int i = 0; i < samples/2; i++) {
         abuffer[i] = abuffer[2*i];
@@ -151,8 +152,8 @@ void frame() {
     if (pushed != samples) {
         printf("ring overflow: %d / %d pushed\n", pushed, samples);
     }
-    auto *video = core_.GetVideo();
-    video->Render32bit(video->GetFrameBuffer(), (uint8_t*)fbuffer, GS_PIXEL_RGBA8888, VIDEO_WIDTH*VIDEO_HEIGHT, /*overscan*/false);
+    // auto *video = core_.GetVideo();
+    // video->Render32bit(video->GetFrameBuffer(), (uint8_t*)fbuffer, GS_PIXEL_RGBA8888, VIDEO_WIDTH*VIDEO_HEIGHT, /*overscan*/false);
 }
 
 #ifndef __wasm32__
