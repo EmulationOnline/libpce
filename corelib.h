@@ -3,10 +3,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define VIDEO_WIDTH 2048
-#define VIDEO_HEIGHT 512
-#define OVER_WIDTH VIDEO_WIDTH
-#define OVER_HEIGHT VIDEO_HEIGHT
+#define VIDEO_WIDTH 256
+#define VIDEO_HEIGHT 242
+#define OVER_WIDTH 2048
+#define OVER_HEIGHT 512
 // Used by core to log to ui. Frontends are expected to define this.
 void corelib_set_puts(void(*cb)(const char*));
 

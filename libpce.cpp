@@ -98,6 +98,13 @@ void init(const uint8_t* data, size_t len) {
         return;
     }
     has_init_ = true;
+
+    GG_Runtime_Info runtime_info;
+    core_.GetRuntimeInfo(runtime_info);
+    printf("screen width: %d\n", runtime_info.screen_width);
+    printf("screen height: %d\n", runtime_info.screen_height);
+    assert(runtime_info.screen_width == VIDEO_WIDTH);
+    assert(runtime_info.screen_height == VIDEO_HEIGHT);
 }
 
 EXPOSE
