@@ -58,6 +58,9 @@ void set_key(size_t key, char val) {
            don't exist on the main controller
            so are unmapped here.
         */
+        case BTN_Sel: gsk = GG_KEY_SELECT; break;
+        case BTN_Start: gsk = GG_KEY_RUN; break;
+
         case BTN_Up: gsk = GG_KEY_UP; break;
         case BTN_Down: gsk = GG_KEY_DOWN; break;
         case BTN_Left: gsk = GG_KEY_LEFT; break;
