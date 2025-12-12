@@ -8,7 +8,7 @@
 #define OVER_WIDTH 2048
 #define OVER_HEIGHT 512
 // Used by core to log to ui. Frontends are expected to define this.
-void corelib_set_puts(void(*cb)(const char*));
+
 
 enum Keys {
     BTN_A = 0,
@@ -25,7 +25,7 @@ enum Keys {
 };
 
 
-#undef EMU_USES_CPP
+#define EMU_USES_CPP
 
 #ifdef EMU_USES_CPP
 #define UNMANGLE extern "C"
@@ -33,7 +33,9 @@ enum Keys {
 #define UNMANGLE
 #endif
 
-#define EXPOSE __attribute__((visibility("default")))
+#define EXPOSE extern "C" __attribute__((visibility("default")))
+
+UNMANGLE void corelib_set_puts(void(*cb)(const char*));
 
 UNMANGLE void set_key(size_t key, char val);
 UNMANGLE void init(const uint8_t* data, size_t len);

@@ -57,5 +57,5 @@ WASMFLAGS=-Wl,--no-entry -Wl,--export-all -s EXPORTED_FUNCTIONS=$(EXPORTS) -s EX
 
 .PHONY: libpce.js
 libpce.js:
-	$(EMCC) -O3 $(CFLAGS) $(PCEFLAGS) $(CSRCS)
-	$(EMCXX) -O3 $(CFLAGS) $(PCEFLAGS) $(WASMFLAGS) -o libpce.js libpce.cpp $(SRCS) 
+	$(EMCC) -D__OPTIMIZE__ $(CFLAGS) $(PCEFLAGS) $(CSRCS)
+	$(EMCXX) -D__OPTIMIZE__ $(CFLAGS) $(PCEFLAGS) $(WASMFLAGS) -o libpce.js libpce.cpp $(SRCS) 
