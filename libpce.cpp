@@ -204,9 +204,13 @@ void save(int fd) {
     // Total size is unknown, make a conservative allocation.
     uint8_t *buffer = (uint8_t*)malloc(MAX_STATE_SIZE);
     uint8_t* const orig_buffer = buffer;
-    size_t bytes = 0;
-    core_.SaveState(buffer, bytes);
-    printf("Wrote %zu bytes\n", bytes);
+    size_t bytes = MAX_STATE_SIZE;
+    if (!core_.SaveState(buffer, bytes)) {
+        puts("Failed to save state.");
+        return;
+    } else {
+        printf("State generated %zu bytes\n", bytes);
+    }
     while (bytes > 0) {
         ssize_t written = write(fd, buffer, bytes);
         if (written <= 0) {
