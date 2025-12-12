@@ -50,10 +50,12 @@ wrepl:
 	ls libpce.cpp Makefile | entr -c make libpce.js
 	
 # EMCC=~/external/emsdk/upstream/bin/wasm32-clang++
-EMCC=~/external/emscripten/em++
+EMCXX=~/external/emscripten/em++
+EMCC=~/external/emscripten/emcc
 EXPORTS="['_framebuffer_bytes', '_frame', '_init', '_alloc_rom']"
 WASMFLAGS=-Wl,--no-entry -Wl,--export-all -s EXPORTED_FUNCTIONS=$(EXPORTS) -s EXPORTED_RUNTIME_METHODS=['HEAPU8'] -DISWASM
 
 .PHONY: libpce.js
 libpce.js:
-	 $(EMCC) $(CFLAGS) $(PCEFLAGS) $(WASMFLAGS) -o libpce.js libpce.cpp $(SRCS) 
+	$(EMCC) -O3 $(CFLAGS) $(PCEFLAGS) $(CSRCS)
+	$(EMCXX) -O3 $(CFLAGS) $(PCEFLAGS) $(WASMFLAGS) -o libpce.js libpce.cpp $(SRCS) 
