@@ -148,12 +148,40 @@ long apu_sample_variable(int16_t* output, int32_t samples) {
     return read;
 }
 
+void copy_from_megabuffer(size_t width, size_t height) {
+    // Given a frame that was just copied to the megabuffer, copy a smaller
+    // window into the framebuffer for presentation.
+    GG_Runtime_Info runtime_info;
+    core_.GetRuntimeInfo(runtime_info);
+    printf("screen width: %d\n", runtime_info.screen_width);
+    printf("screen height: %d\n", runtime_info.screen_height);
+    // assert(runtime_info.screen_width == VIDEO_WIDTH);
+    // assert(runtime_info.screen_height == VIDEO_HEIGHT);
+    const int row_stride = runtime_info.screen_width;
+    for (int y = 0; y < height; y++) {
+        memcpy(fbuffer + width*y, 
+               megabuffer+row_stride*y,
+               sizeof(uint32_t) * width);
+        // for (int x = 0; x < width; x++) {
+        //     uint32_t pixel = megabuffer[row_stride*y + x];
+
+        //     // rgba -> abgr byte ordering
+        //     // uint32_t out = (r) | (b << 16) | (g << 8) | 0xff000000;
+        //     // fbuffer[y*width + x] = out;
+        //     fbuffer[y*width + x] = 0xffff0000;
+        // }
+    } 
+}
+
 EXPOSE
 void frame() {
     REQUIRE_CORE();
     int samples = 0;
     // core_.RunToVBlank((uint8_t*)&megabuffer, abuffer, &samples);
-    core_.RunToVBlank((uint8_t*)&fbuffer, abuffer, &samples);
+    core_.RunToVBlank((uint8_t*)&megabuffer, abuffer, &samples);
+
+    copy_from_megabuffer(VIDEO_WIDTH, VIDEO_HEIGHT);
+
     // Core produces stereo, convert to mono
     for (int i = 0; i < samples/2; i++) {
         abuffer[i] = abuffer[2*i];
