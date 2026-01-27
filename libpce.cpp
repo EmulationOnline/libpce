@@ -153,8 +153,8 @@ void copy_from_megabuffer(size_t width, size_t height) {
     // window into the framebuffer for presentation.
     GG_Runtime_Info runtime_info;
     core_.GetRuntimeInfo(runtime_info);
-    printf("screen width: %d\n", runtime_info.screen_width);
-    printf("screen height: %d\n", runtime_info.screen_height);
+    // printf("screen width: %d\n", runtime_info.screen_width);
+    // printf("screen height: %d\n", runtime_info.screen_height);
     // assert(runtime_info.screen_width == VIDEO_WIDTH);
     // assert(runtime_info.screen_height == VIDEO_HEIGHT);
     const int row_stride = runtime_info.screen_width;
@@ -186,26 +186,55 @@ void frame() {
     for (int i = 0; i < samples/2; i++) {
         abuffer[i] = abuffer[2*i];
     }
-    int pushed = ring_.push(abuffer, samples/2);
-    if (pushed != samples) {
+    samples /= 2;
+    int pushed = ring_.push(abuffer, samples);
+    if (pushed < samples) {
         printf("ring overflow: %d / %d pushed\n", pushed, samples);
     }
     // auto *video = core_.GetVideo();
     // video->Render32bit(video->GetFrameBuffer(), (uint8_t*)fbuffer, GS_PIXEL_RGBA8888, VIDEO_WIDTH*VIDEO_HEIGHT, /*overscan*/false);
 }
 
+// Returns bytes saved, and writes to dest. 
+// Dest may be null to calculate size only. returns < 0 on error.
+constexpr size_t MAX_STATE_SIZE = 100'000'000; // 100M
+EXPOSE int save_str(uint8_t* dest, int capacity) {
+    REQUIRE_CORE(-1);
+    const bool estimate = dest == NULL;
+
+    if (estimate) {
+        // size is unknown apriori, give it a huge allocation
+        size_t sz = MAX_STATE_SIZE;
+        dest = (uint8_t*)malloc(sz);
+        capacity = sz;
+    }
+
+    size_t bytes = capacity;
+    core_.SaveState(dest, bytes);
+    printf("Wrote %zu bytes\n", bytes);
+    assert(bytes <= capacity);
+
+    if (estimate) {
+        free(dest);
+    }
+    return bytes;
+}
+// Loads len bytes from src
+EXPOSE void load_str(int len, const uint8_t* src) {
+}
+
 #ifndef __wasm32__
 // save&load unsupported for wasm
 
-constexpr size_t MAX_STATE_SIZE = 100'000'000; // 100M
 EXPOSE
 void save(int fd) {
     REQUIRE_CORE();
     // Total size is unknown, make a conservative allocation.
-    uint8_t *buffer = (uint8_t*)malloc(MAX_STATE_SIZE);
+    size_t bytes = save_str(NULL, 0);
+    uint8_t *buffer = (uint8_t*)malloc(bytes);
+    save_str(buffer, bytes);
     uint8_t* const orig_buffer = buffer;
-    size_t bytes = MAX_STATE_SIZE;
-    if (!core_.SaveState(buffer, bytes)) {
+    if (save_str(buffer, bytes) < 0) {
         puts("Failed to save state.");
         return;
     } else {

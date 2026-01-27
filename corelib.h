@@ -46,6 +46,11 @@ UNMANGLE void load_state(const char* save_path);
 // Interface used by app. App closes fd.
 UNMANGLE void save(int fd);
 UNMANGLE void load(int fd);
+// Returns bytes saved, and writes to dest. 
+// Dest may be null to calculate size only. returns < 0 on error.
+UNMANGLE int save_str(uint8_t* dest, int capacity);
+// Loads len bytes from src
+UNMANGLE void load_str(int len, const uint8_t* src);
 
 // APU
 const int SAMPLE_RATE = 44100;
