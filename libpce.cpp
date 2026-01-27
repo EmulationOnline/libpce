@@ -221,6 +221,7 @@ EXPOSE int save_str(uint8_t* dest, int capacity) {
 }
 // Loads len bytes from src
 EXPOSE void load_str(int len, const uint8_t* src) {
+    core_.LoadState(src, len);
 }
 
 #ifndef __wasm32__
@@ -289,7 +290,7 @@ void load(int fd) {
         write += read_bytes;
         bytes -= read_bytes;
     }
-    core_.LoadState(buffer, state_size);
+    load_str(state_size, buffer);
     free(buffer);
 }
 
