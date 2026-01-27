@@ -13,7 +13,7 @@ debs-main: deps
 ci: deps libpce.so
 
 EMBEDFLAGS=-O3 -fvisibility=hidden -static-libstdc++ -fPIC
-# CFLAGS=-fvisibility=hidden -ffreestanding -nostdlib -fPIC -O3 -Wfatal-errors -Werror
+EMBEDFLAGS=-O3 -fvisibility=hidden -fPIC
 SRCS := $(wildcard Geargrafx/src/*.cpp Geargrafx/platforms/libretro/*.cpp) *.o
 # some deps are easier to build in c mode, so we'll build a separate obj file in c mode.
 CSRCS := -DZ7_ST -c Geargrafx/platforms/shared/dependencies/libchdr/src/*.c  Geargrafx/platforms/shared/dependencies/miniz/*.c Geargrafx/platforms/shared/dependencies/lzma/src/*.c 
@@ -21,7 +21,7 @@ CSRCS := -DZ7_ST -c Geargrafx/platforms/shared/dependencies/libchdr/src/*.c  Gea
 PCEFLAGS=-Wfatal-errors -Werror -Wno-narrowing -D__LIBRETRO__ -I Geargrafx/src -I Geargrafx/platforms/libretro -I Geargrafx/platforms/shared/dependencies/miniz/ -I Geargrafx/platforms/shared/dependencies/libchdr/include/ -I Geargrafx/platforms/shared/dependencies/zstd/ -I Geargrafx/platforms/shared/dependencies/lzma/include -Wno-div-by-zero
 libpce.so: libpce.cpp corelib.h
 	$(CC) $(CFLAGS) $(EMBEDFLAGS) $(PCEFLAGS) $(CSRCS)
-	$(CXX) $(CFLAGS) $(EMBEDFLAGS) $(PCEFLAGS) -shared -o libpce.so libpce.cpp $(SRCS)
+	$(CXX) $(CFLAGS) $(LDFLAGS) $(EMBEDFLAGS) $(PCEFLAGS) -shared -o libpce.so libpce.cpp $(SRCS)
 	cp libpce.so libapu.so
 	echo "libpce done"
 
@@ -53,7 +53,7 @@ wrepl:
 EMCXX=~/external/emscripten/em++
 EMCC=~/external/emscripten/emcc
 EXPORTS="['_framebuffer_bytes', '_frame', '_init', '_alloc_rom']"
-WASMFLAGS=-Wl,--no-entry -Wl,--export-all -s EXPORTED_FUNCTIONS=$(EXPORTS) -s EXPORTED_RUNTIME_METHODS=['HEAPU8'] -DISWASM
+WASMFLAGS=-Wl,--no-entry -Wl,--export-all -s EXPORTED_FUNCTIONS=$(EXPORTS) -s EXPORTED_RUNTIME_METHODS=['HEAPU8'] -DISWASM -sALLOW_MEMORY_GROWTH
 
 .PHONY: libpce.js
 libpce.js:
